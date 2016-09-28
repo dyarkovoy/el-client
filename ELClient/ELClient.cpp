@@ -2,14 +2,14 @@
 
 #include "ELClient.h"
 
-#define SLIP_END  0300        // indicates end of packet
-#define SLIP_ESC  0333        // indicates byte stuffing
+#define SLIP_END      0300    // indicates end of packet
+#define SLIP_ESC      0333    // indicates byte stuffing, must be followed by ESC_END or ESC_ESC
 #define SLIP_ESC_END  0334    // ESC ESC_END means END data byte
 #define SLIP_ESC_ESC  0335    // ESC ESC_ESC means ESC data byte
 
 //===== Input
 
-// Process a received SLIP message
+// Process a received SLIP message. Returns the packet if there is a value in the response.
 ELClientPacket* ELClient::protoCompletedCb(void) {
   // the packet starts with a ELClientPacket
   ELClientPacket* packet = (ELClientPacket*)_proto.buf;
@@ -40,12 +40,13 @@ ELClientPacket* ELClient::protoCompletedCb(void) {
   }
 
   // dispatch based on command
-  if (packet->cmd == CMD_RESP_V) {
+  switch (packet->cmd) {
+  case CMD_RESP_V: // response with a value: return the packet
     // value response
     _debug->print("RESP_V: ");
     _debug->println(packet->value);
     return packet;
-  } else if (packet->cmd == CMD_RESP_CB) {
+  case CMD_RESP_CB: // response callback: perform the callback!
     FP<void, void*> *fp;
     // callback reponse
     _debug->print("RESP_CB: ");
@@ -58,7 +59,11 @@ ELClientPacket* ELClient::protoCompletedCb(void) {
       (*fp)(&resp);
     }
     return NULL;
-  } else {
+  case CMD_SYNC: // esp-link is not in sync, it may have reset, signal up the stack
+    _debug->println("NEED_SYNC!");
+    if (resetCb != NULL) (*resetCb)();
+    return NULL;
+  default:
     // command (NOT IMPLEMENTED)
     _debug->println("CMD??");
     return NULL;
@@ -244,17 +249,28 @@ uint16_t ELClient::crc16Data(const unsigned char *data, uint16_t len, uint16_t a
 //===== Basic requests built into ElClient
 
 boolean ELClient::Sync(uint32_t timeout) {
+  // send a SLIP END char to make sure we get a clean start
+  _serial->write(SLIP_END);
   // send sync request
   Request(CMD_SYNC, (uint32_t)&wifiCb, 0);
   Request();
+  // we don't want to get a stale response that we need to sync 'cause that has the effect of
+  // calling us again recursively....
+  void (*rr)() = resetCb;
+  resetCb = NULL;
   // empty the response queue hoping to find the wifiCb address
   ELClientPacket *packet;
   while ((packet = WaitReturn(timeout)) != NULL) {
-    if (packet->value == (uint32_t)&wifiCb) { _debug->println("SYNC!"); return true; }
+    if (packet->value == (uint32_t)&wifiCb) {
+      _debug->println("SYNC!");
+      resetCb = rr;
+      return true;
+    }
     _debug->print("BAD: ");
     _debug->println(packet->value);
   }
   // doesn't look like we got a real response
+  resetCb = rr;
   return false;
 }
 
