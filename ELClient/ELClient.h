@@ -40,6 +40,8 @@ typedef enum {
 
   CMD_SOCKET_SETUP = 40,  /**< Setup socket connection */
   CMD_SOCKET_SEND,        /**< Send socket packet */
+
+  CMD_GET_WIFI_INFO = 50,	/**< Get several bits of IP address info */
 } CmdName; /**< Enumeration of commands supported by esp-link, this needs to match the definition in esp-link! */
 
 enum WIFI_STATUS {
