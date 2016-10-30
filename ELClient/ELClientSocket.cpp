@@ -67,7 +67,7 @@ void ELClientSocket::socketCallback(void *res)
 			int argLen = resp->argLen();
 			Serial.print(" data length: "+String(argLen));
 		#endif
-		resp->popArgPtr(&_data);
+		resp->popArgPtr((void **)&_data);
 		#ifdef DEBUG_EN
 			_data[_len] = '\0';
 			Serial.print(" data: "+String(_data));
