@@ -88,4 +88,10 @@ void ELClientCmd::wifiInfoCmdCallback(void *res) {
     _elc->_debug->print("GW ");
     _elc->_debug->println(gateway);
   }
+
+  resp->popArg(&mac, sizeof(mac));
+}
+
+char *ELClientCmd::getMac() {
+  return (char *)mac;
 }

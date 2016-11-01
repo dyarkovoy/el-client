@@ -18,11 +18,13 @@ class ELClientCmd {
     // Get the current time in seconds since the epoch, 0 if the time is unknown
     uint32_t GetTime();
     void GetWifiInfo(uint32_t *, uint32_t *, uint32_t *);
+    char *getMac();
 
   private:
     ELClient* _elc; /**< ELClient instance */
     FP<void, void*> clientCmdCb; /**< Pointer to external callback function */
     void wifiInfoCmdCallback(void *resp);
     uint32_t ip, netmask, gateway;
+    uint8_t mac[6];
 };
 #endif

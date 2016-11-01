@@ -60,6 +60,18 @@ void setup() {
   Serial.print(".");
   Serial.print((gw & 0xFF000000) >> 24);
   Serial.println("");
+
+  char *mac = cmd.getMac();
+  Serial.print("MAC Address : ");
+  for (int i=0; i<6; i++) {
+    char buf[4];
+    if (i < 5)
+      sprintf(buf, "%02X:", 0xFF & mac[i]);
+    else
+      sprintf(buf, "%02X", 0xFF & mac[i]);
+    Serial.print(buf);
+  }
+  Serial.println("");
 }
 
 void loop() {

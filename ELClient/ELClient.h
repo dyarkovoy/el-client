@@ -24,6 +24,7 @@ typedef enum {
   CMD_CB_ADD,       /**< Add a custom callback */
   CMD_CB_EVENTS,    /**< ??? */
   CMD_GET_TIME,     /**< Get current time in seconds since the unix epoch */
+  CMD_GET_WIFI_INFO,	/**< Get several bits of IP address info */
   //CMD_GET_INFO,
 
   CMD_MQTT_SETUP = 10, /**< Register callback functions */
@@ -40,8 +41,6 @@ typedef enum {
 
   CMD_SOCKET_SETUP = 40,  /**< Setup socket connection */
   CMD_SOCKET_SEND,        /**< Send socket packet */
-
-  CMD_GET_WIFI_INFO = 50,	/**< Get several bits of IP address info */
 } CmdName; /**< Enumeration of commands supported by esp-link, this needs to match the definition in esp-link! */
 
 enum WIFI_STATUS {
