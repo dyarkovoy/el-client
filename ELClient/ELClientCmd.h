@@ -18,7 +18,10 @@ class ELClientCmd {
     // Get the current time in seconds since the epoch, 0 if the time is unknown
     uint32_t GetTime();
     void GetWifiInfo(uint32_t *, uint32_t *, uint32_t *);
+    uint32_t GetWifiApCount();
+    char * GetWifiApName(int i);
     char *getMac();
+    char *mqttGetClientId();
 
   private:
     ELClient* _elc; /**< ELClient instance */
@@ -26,5 +29,12 @@ class ELClientCmd {
     void wifiInfoCmdCallback(void *resp);
     uint32_t ip, netmask, gateway;
     uint8_t mac[6];
+
+    char *ssid;
+    void wifiGetApNameCallback(void *);
+
+    FP<void, void*> mqttCmdCb; /**< Pointer to external callback function */
+    void mqttGetClientIdCallback(void *);
+    char *mqtt_clientid;
 };
 #endif

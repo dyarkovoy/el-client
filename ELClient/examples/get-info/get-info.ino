@@ -72,6 +72,12 @@ void setup() {
     Serial.print(buf);
   }
   Serial.println("");
+
+  // Query the MQTT clientid
+  Serial.print("MQTT client id : ");
+  char *mqtt_clientid = cmd.mqttGetClientId();
+  Serial.println(mqtt_clientid);
+
 }
 
 void loop() {

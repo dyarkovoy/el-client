@@ -403,7 +403,7 @@ _serial(serial) {
 */
 ELClient::ELClient(Stream* serial, Stream* debug) :
 _debug(debug), _serial(serial) {
-  _debugEn = true;
+  // _debugEn = true;	// Danny
   init();
 }
 

@@ -92,6 +92,72 @@ void ELClientCmd::wifiInfoCmdCallback(void *res) {
   resp->popArg(&mac, sizeof(mac));
 }
 
+/*
+ * FIXME this depends on having called getWifiInfo
+ */
 char *ELClientCmd::getMac() {
   return (char *)mac;
+}
+
+/*
+ * Query the number of Access Points scanned.
+ * FIXME this relies on having triggered such a scan
+ */
+uint32_t ELClientCmd::GetWifiApCount() {
+  _elc->Request(CMD_WIFI_GET_APCOUNT, 0, 0);
+  _elc->Request();
+
+  ELClientPacket *pkt = _elc->WaitReturn();
+  return pkt ? pkt->value : -1;
+}
+
+/*
+ * Query the SSID of a network. Range and FIXME as with the ApCount.
+ */
+char * ELClientCmd::GetWifiApName(int i) {
+  uint16_t	ix = i;
+
+  clientCmdCb.attach(this, &ELClientCmd::wifiGetApNameCallback);
+  _elc->Request(CMD_WIFI_GET_APNAME, (uint32_t)&clientCmdCb, 1);
+  _elc->Request(&ix, 2);
+  _elc->Request();
+
+  ELClientPacket *pkt = _elc->WaitReturn();
+  if (_elc->_debugEn) {
+    _elc->_debug->println("Returning ...");
+  }
+
+  return ssid;
+}
+
+void ELClientCmd::wifiGetApNameCallback(void *res) {
+  ELClientResponse *resp = (ELClientResponse *)res;
+
+  if (ssid == 0) ssid = (char *)malloc(33);
+  resp->popArg(ssid, 33);
+  ssid[32] = '\0';
+}
+
+/*
+ * Query the MQTT clientid
+ */
+void ELClientCmd:: mqttGetClientIdCallback(void *res) {
+  ELClientResponse *resp = (ELClientResponse *)res;
+
+  if (mqtt_clientid == 0) mqtt_clientid = (char *)malloc(33);
+  resp->popArg(mqtt_clientid, 32);
+  mqtt_clientid[32] = '\0';
+}
+
+char *ELClientCmd::mqttGetClientId() {
+  mqttCmdCb.attach(this, &ELClientCmd::mqttGetClientIdCallback);
+  _elc->Request(CMD_MQTT_GET_CLIENTID, (uint32_t)&mqttCmdCb, 0);
+  _elc->Request();
+
+  ELClientPacket *pkt = _elc->WaitReturn();
+  if (_elc->_debugEn) {
+    _elc->_debug->println("Returning ...");
+  }
+
+  return mqtt_clientid;
 }
