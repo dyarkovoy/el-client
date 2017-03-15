@@ -185,8 +185,9 @@ char *ELClientCmd::mqttGetClientId() {
  * Query RSSI (signal strength)
  */
 int ELClientCmd::GetRSSI(int i) {
+  char x = i;
   _elc->Request(CMD_WIFI_SIGNAL_STRENGTH, 0, 1);
-  _elc->Request(&i, 4);
+  _elc->Request(&x, 1);
   _elc->Request();
 
   ELClientPacket *pkt = _elc->WaitReturn();
