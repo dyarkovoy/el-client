@@ -18,10 +18,12 @@ class ELClientCmd {
     // Get the current time in seconds since the epoch, 0 if the time is unknown
     uint32_t GetTime();
     void GetWifiInfo(uint32_t *, uint32_t *, uint32_t *);
+    void SetWifiInfo(uint32_t, uint32_t, uint32_t);
     uint32_t GetWifiApCount();
-    char * GetWifiApName(int i);
+    char * GetWifiApName(int);
     char *getMac();
     char *mqttGetClientId();
+    int GetRSSI(int);		// Current signal strength if <0, or selected network's rssi
 
   private:
     ELClient* _elc; /**< ELClient instance */

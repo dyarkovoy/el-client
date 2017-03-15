@@ -63,6 +63,25 @@ void ELClientCmd::GetWifiInfo(uint32_t *ptr_ip, uint32_t *ptr_netmask, uint32_t 
     *ptr_gateway = gateway;
 }
 
+/*! SetWifiInfo()
+@brief Set IP address
+@details ip address, network mask, gateway ip
+@return 
+@par Example
+@code
+	uint32_t ip, nm, gw;
+	cmd.SetWifiInfo(ip, nm, gw);
+@endcode
+*/
+void ELClientCmd::SetWifiInfo(uint32_t ptr_ip, uint32_t ptr_netmask, uint32_t ptr_gateway) {
+  _elc->Request(CMD_SET_WIFI_INFO, 0, 0);
+  _elc->Request();
+
+  ELClientPacket *pkt = _elc->WaitReturn();
+  // return pkt ? pkt->value : 0;
+}
+
+
 /*! wifiInfoCmdCallback()
 @brief Helper function to decode the three bits of information from the packet
 @details See GetWifiInfo()
@@ -160,4 +179,16 @@ char *ELClientCmd::mqttGetClientId() {
   }
 
   return mqtt_clientid;
+}
+
+/*
+ * Query RSSI (signal strength)
+ */
+int ELClientCmd::GetRSSI(int i) {
+  _elc->Request(CMD_WIFI_SIGNAL_STRENGTH, 0, 1);
+  _elc->Request(&i, 4);
+  _elc->Request();
+
+  ELClientPacket *pkt = _elc->WaitReturn();
+  return pkt ? pkt->value : 0;
 }
