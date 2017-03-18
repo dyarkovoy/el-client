@@ -24,6 +24,9 @@ class ELClientCmd {
     char *getMac();
     char *mqttGetClientId();
     int GetRSSI(int);		// Current signal strength if <0, or selected network's rssi
+    void SelectSSID(char *, char *);
+    void SelectSSID(int, char *);
+    char *GetSSID();
 
   private:
     ELClient* _elc; /**< ELClient instance */

@@ -193,3 +193,41 @@ int ELClientCmd::GetRSSI(int i) {
   ELClientPacket *pkt = _elc->WaitReturn();
   return pkt ? pkt->value : 0;
 }
+
+void ELClientCmd::SelectSSID(char *ssid, char *pass) {
+  _elc->Request(CMD_WIFI_SELECT_SSID, 0, 2);
+  _elc->Request(ssid, strlen(ssid));
+  _elc->Request(pass, strlen(pass));
+  _elc->Request();
+
+  ELClientPacket *pkt = _elc->WaitReturn();
+  if (_elc->_debugEn) {
+    _elc->_debug->println("Returning ...");
+  }
+}
+
+void ELClientCmd::SelectSSID(int xssid, char *pass) {
+  unsigned char x = xssid;
+  _elc->Request(CMD_WIFI_SELECT_SSID, 0, 2);
+  _elc->Request(&x, 1);
+  _elc->Request(pass, strlen(pass));
+  _elc->Request();
+
+  ELClientPacket *pkt = _elc->WaitReturn();
+  if (_elc->_debugEn) {
+    _elc->_debug->println("Returning ...");
+  }
+}
+
+char *ELClientCmd::GetSSID() {
+  clientCmdCb.attach(this, &ELClientCmd::wifiGetApNameCallback);
+  _elc->Request(CMD_WIFI_GET_SSID, (uint32_t)&clientCmdCb, 0);
+  _elc->Request();
+
+  ELClientPacket *pkt = _elc->WaitReturn();
+  if (_elc->_debugEn) {
+    _elc->_debug->println("Returning ...");
+  }
+
+  return ssid;
+}
