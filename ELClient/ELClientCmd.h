@@ -27,6 +27,7 @@ class ELClientCmd {
     void SelectSSID(char *, char *);
     void SelectSSID(int, char *);
     char *GetSSID();
+    void StartScan();
 
   private:
     ELClient* _elc; /**< ELClient instance */

@@ -44,11 +44,12 @@ typedef enum {
   CMD_SOCKET_SETUP = 40,  /**< Setup socket connection */
   CMD_SOCKET_SEND,        /**< Send socket packet */
 
-  CMD_WIFI_GET_APCOUNT = 50,	/* */
-  CMD_WIFI_GET_APNAME,		/* */
-  CMD_WIFI_SELECT_SSID,
-  CMD_WIFI_SIGNAL_STRENGTH,
-  CMD_WIFI_GET_SSID,
+  CMD_WIFI_GET_APCOUNT = 50,	// Query number of access pointer
+  CMD_WIFI_GET_APNAME,		// Get the name for an access point
+  CMD_WIFI_SELECT_SSID,		// Connect to this network
+  CMD_WIFI_SIGNAL_STRENGTH,	// Query RSSI
+  CMD_WIFI_GET_SSID,		// Query SSID currently connected to
+  CMD_WIFI_START_SCAN,		// Trigger a scan (takes a long time)
 
 } CmdName; /**< Enumeration of commands supported by esp-link, this needs to match the definition in esp-link! */
 

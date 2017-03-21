@@ -231,3 +231,13 @@ char *ELClientCmd::GetSSID() {
 
   return ssid;
 }
+
+void ELClientCmd::StartScan() {
+  _elc->Request(CMD_WIFI_START_SCAN, 0, 0);
+  _elc->Request();
+
+  ELClientPacket *pkt = _elc->WaitReturn();
+  if (_elc->_debugEn) {
+    _elc->_debug->println("Returning ...");
+  }
+}

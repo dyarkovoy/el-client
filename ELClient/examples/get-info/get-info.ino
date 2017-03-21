@@ -12,6 +12,9 @@ ELClientCmd cmd(&esp);
 
 boolean wifiConnected = false;
 
+#define IP(x, y) ((int)((x >> (8*y)) & 0xFF))
+static char buffer[80];
+
 void setup() {
   Serial.begin(9600);	// Match the esplink config (Arduino serial <-> ESP)
   delay(3000);
@@ -28,38 +31,12 @@ void setup() {
   uint32_t ip, nm, gw;
   cmd.GetWifiInfo(&ip, &nm, &gw);
 
-  // FIX ME in reverse
-  Serial.print("IP Address ");
-  Serial.print((ip & 0x000000FF));
-  Serial.print(".");
-  Serial.print((ip & 0x0000FF00) >> 8);
-  Serial.print(".");
-  Serial.print((ip & 0x00FF0000) >> 16);
-  Serial.print(".");
-  Serial.print((ip & 0xFF000000) >> 24);
-  Serial.println("");
-
-  // FIX ME in reverse
-  Serial.print("Network mask ");
-  Serial.print((nm & 0x000000FF));
-  Serial.print(".");
-  Serial.print((nm & 0x0000FF00) >> 8);
-  Serial.print(".");
-  Serial.print((nm & 0x00FF0000) >> 16);
-  Serial.print(".");
-  Serial.print((nm & 0xFF000000) >> 24);
-  Serial.println("");
-
-  // FIX ME in reverse
-  Serial.print("IP Gateway ");
-  Serial.print((gw & 0x000000FF));
-  Serial.print(".");
-  Serial.print((gw & 0x0000FF00) >> 8);
-  Serial.print(".");
-  Serial.print((gw & 0x00FF0000) >> 16);
-  Serial.print(".");
-  Serial.print((gw & 0xFF000000) >> 24);
-  Serial.println("");
+  sprintf(buffer, "IP Address %d.%d.%d.%d\n", IP(ip, 0), IP(ip, 1), IP(ip, 2), IP(ip, 3));
+  Serial.print(buffer);
+  sprintf(buffer, "Network mask %d.%d.%d.%d\n", IP(nm, 0), IP(nm, 1), IP(nm, 2), IP(nm, 3));
+  Serial.print(buffer);
+  sprintf(buffer, "IP Gateway %d.%d.%d.%d\n", IP(gw, 0), IP(gw, 1), IP(gw, 2), IP(gw, 3));
+  Serial.print(buffer);
 
   char *mac = cmd.getMac();
   Serial.print("MAC Address : ");
