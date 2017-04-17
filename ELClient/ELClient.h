@@ -51,6 +51,11 @@ typedef enum {
   CMD_WIFI_GET_SSID,		// Query SSID currently connected to
   CMD_WIFI_START_SCAN,		// Trigger a scan (takes a long time)
 
+  CMD_UPNP_SCAN = 60,
+  CMD_UPNP_ADD_PORT,
+  CMD_UPNP_REMOVE_PORT,
+  CMD_UPNP_BEGIN,
+
 } CmdName; /**< Enumeration of commands supported by esp-link, this needs to match the definition in esp-link! */
 
 enum WIFI_STATUS {
