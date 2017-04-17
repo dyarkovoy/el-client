@@ -55,6 +55,7 @@ typedef enum {
   CMD_UPNP_ADD_PORT,
   CMD_UPNP_REMOVE_PORT,
   CMD_UPNP_BEGIN,
+  CMD_UPNP_QUERY_EXTERNAL_ADDRESS,
 
 } CmdName; /**< Enumeration of commands supported by esp-link, this needs to match the definition in esp-link! */
 

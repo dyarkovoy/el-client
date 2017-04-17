@@ -77,4 +77,9 @@ void ELClientUPnP::remove(uint16_t remote_port) {
  * Query the external IP address of the router
  */
 uint32_t ELClientUPnP::getExternalAddress() {
+  _elc->Request(CMD_UPNP_QUERY_EXTERNAL_ADDRESS, 0, 0);
+  _elc->Request();
+
+  ELClientPacket *pkt = _elc->WaitReturn();
+  return pkt ? pkt->value : 0;
 }
