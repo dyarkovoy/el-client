@@ -24,12 +24,15 @@ typedef enum {
   CMD_CB_ADD,       /**< Add a custom callback */
   CMD_CB_EVENTS,    /**< ??? */
   CMD_GET_TIME,     /**< Get current time in seconds since the unix epoch */
+  CMD_GET_WIFI_INFO,	/**< Get several bits of IP address info */
+  CMD_SET_WIFI_INFO,	/**< Set several bits of IP address info */
   //CMD_GET_INFO,
 
   CMD_MQTT_SETUP = 10, /**< Register callback functions */
   CMD_MQTT_PUBLISH,    /**< Publish MQTT topic */
   CMD_MQTT_SUBSCRIBE,  /**< Subscribe to MQTT topic */
   CMD_MQTT_LWT,        /**< Define MQTT last will */
+  CMD_MQTT_GET_CLIENTID,
 
   CMD_REST_SETUP = 20, /**< Setup REST connection */
   CMD_REST_REQUEST,    /**< Make request to REST server */
@@ -40,6 +43,14 @@ typedef enum {
 
   CMD_SOCKET_SETUP = 40,  /**< Setup socket connection */
   CMD_SOCKET_SEND,        /**< Send socket packet */
+
+  CMD_WIFI_GET_APCOUNT = 50,	// Query number of access pointer
+  CMD_WIFI_GET_APNAME,		// Get the name for an access point
+  CMD_WIFI_SELECT_SSID,		// Connect to this network
+  CMD_WIFI_SIGNAL_STRENGTH,	// Query RSSI
+  CMD_WIFI_GET_SSID,		// Query SSID currently connected to
+  CMD_WIFI_START_SCAN,		// Trigger a scan (takes a long time)
+
 } CmdName; /**< Enumeration of commands supported by esp-link, this needs to match the definition in esp-link! */
 
 enum WIFI_STATUS {
