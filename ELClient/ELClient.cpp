@@ -65,8 +65,26 @@ ELClientPacket* ELClient::protoCompletedCb(void) {
         _debug->print("RESP_V: ");
         _debug->println(packet->value);
     }
+    _longPacket = 0;
     return packet;
+  case CMD_RESP_CB_CONTINUE:
+    // response callback, but one of the parts of a long packet --> just prepare assembly
+    // Currently just a copy (without notes) of the code below...
+
+  {
+    // Serial.print("CMD_RESP_CB_CONTINUE\n");
+    _longPacket = 1;
+    FP<void, void*> *fp;
+    fp = (FP<void, void*>*)packet->value;
+    if (fp->attached()) {
+      ELClientResponse resp(packet);
+      (*fp)(&resp);
+    }
+    return NULL;
+  }
+
   case CMD_RESP_CB: // response callback: perform the callback!
+  {
     FP<void, void*> *fp;
     // callback reponse
     if (_debugEn) {
@@ -75,12 +93,15 @@ ELClientPacket* ELClient::protoCompletedCb(void) {
         _debug->print(" ");
         _debug->println(packet->argc);
     }
+
+    _longPacket = 0;
     fp = (FP<void, void*>*)packet->value;
     if (fp->attached()) {
       ELClientResponse resp(packet);
       (*fp)(&resp);
     }
     return NULL;
+  }
   case CMD_SYNC: // esp-link is not in sync, it may have reset, signal up the stack
     _debug->println("NEED_SYNC!");
     if (resetCb != NULL) (*resetCb)();

@@ -57,6 +57,8 @@ typedef enum {
   CMD_UPNP_BEGIN,
   CMD_UPNP_QUERY_EXTERNAL_ADDRESS,
 
+  CMD_RESP_CB_CONTINUE = 70,        // RESP_CB for a long packet
+
 } CmdName; /**< Enumeration of commands supported by esp-link, this needs to match the definition in esp-link! */
 
 enum WIFI_STATUS {
@@ -143,6 +145,7 @@ class ELClient {
     uint16_t crc; /**< CRC checksum */
     ELClientProtocol _proto; /**< Protocol structure */
     uint8_t _protoBuf[128]; /**< Protocol buffer */
+    uint16_t _longPacket;	/**< Packet length in case of long packet */
 
     void init();
     void DBG(const char* info);
