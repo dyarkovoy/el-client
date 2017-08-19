@@ -43,13 +43,26 @@ void ELClientRest::restCallback(void *res)
 
   ELClientResponse *resp = (ELClientResponse *)res;
 
-  resp->popArg(&_status, sizeof(_status));
-  if (_elc->_debugEn) {
-    _elc->_debug->print("REST code ");
-    _elc->_debug->println(_status);
-  }
+  if (_elc->_longPacket == 0) {
+    resp->popArg(&_status, sizeof(_status));
 
-  _len = resp->popArgPtr(&_data);
+    if (_elc->_debugEn) {
+      _elc->_debug->print("REST code ");
+      _elc->_debug->println(_status);
+    }
+
+    _len = resp->popArgPtr(&_data);
+
+    // Serial.print("restCallback status "); Serial.print(_status); Serial.print(", len "); Serial.println(_len);
+  } else {
+    int16_t lp;
+    resp->popArg(&lp, sizeof(lp));
+    _elc->_longPacket = lp;
+    _status = 200;	// Hack
+    _len = resp->popArgPtr(&_data);
+
+    // Serial.print("restCallback LONG totalLength "); Serial.print(_elc->_longPacket); Serial.print(", len "); Serial.println(_len);
+  }
 }
 
 /*! begin(const char* host, uint16_t port, boolean security)
@@ -379,3 +392,63 @@ uint16_t ELClientRest::waitResponse(char* data, uint16_t maxLen, uint32_t timeou
   }
   return getResponse(data, maxLen);
 }
+
+/*! waitResponse2(char* data, uint16_t maxLen, uint32_t timeout, uint16_t *totalLength, uint16_t packetLength)
+@brief Wait for the response, cope with long packets
+@details Wait for the response from the remote server for <code>time_out</code>,
+	returns the HTTP status code, 0 if no response (may need to wait longer)
+@warning Blocks the Arduino code for 5 seconds! not recommended to use.
+	Received packet is NOT null-terminated
+@param data
+	Pointer to buffer for received packet
+@param maxLen
+	Size of buffer for received packet. If the received packet is larger than the buffer, the received packet will be truncated.
+@param timeout
+	Timout in milli seconds to wait for a response.
+@param totalLength
+	if non-NULL, used to return the total length of the multi-packet data
+@param packetLength
+	if non-NULL, used to return the length of this chunk of data (typically 100 if not the last packet)
+@return <code>uint16_t</code>
+	Size of received packet or number of sent bytes or 0 if no response
+@par Example
+@code
+	static char *buf = 0;
+	static int bufsiz = 700;
+	buf = (char *)malloc(bufsiz);
+	uint16_t datalen = 0, packetlen = 0;
+	memset(buf, 0, bufsiz);
+	char *ptr = buf;
+	err = rest->waitResponse2(ptr, bufsiz-1, DEFAULT_REST_TIMEOUT, &datalen, &packetlen);
+	while (datalen) {
+	  ptr += packetlen;
+	  err = rest->waitResponse2(ptr, bufsiz-1, DEFAULT_REST_TIMEOUT, &datalen, &packetlen);
+	}
+	...
+	free(buf);
+	buf = 0;
+@endcode
+*/
+uint16_t ELClientRest::waitResponse2(char* data, uint16_t maxLen, uint16_t *totalLength, uint16_t *packetLength, uint32_t timeout)
+{
+  uint32_t wait = millis();
+  while (_status == 0 && (millis() - wait < timeout)) {
+    _elc->Process();
+  }
+  return getResponse2(data, maxLen, totalLength, packetLength);
+}
+
+uint16_t ELClientRest::getResponse2(char* data, uint16_t maxLen, uint16_t *totalLength, uint16_t *packetLength)
+{
+  if (_status == 0)
+    return 0;
+  if (totalLength != 0)
+    *totalLength = _elc->_longPacket;
+  if (packetLength != 0)
+    *packetLength = _len;
+  memcpy(data, _data, _len>maxLen?maxLen:_len);
+  int16_t s = _status;
+  _status = 0;
+  return s;
+}
+

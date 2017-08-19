@@ -67,11 +67,13 @@ class ELClientRest {
     // Retrieve the response from the remote server, returns the HTTP status code, 0 if no
     // response (may need to wait longer)
     uint16_t getResponse(char* data, uint16_t maxLen);
+    uint16_t getResponse2(char* data, uint16_t maxLen, uint16_t *totalLength, uint16_t *packetLength);
 
     // Wait for the response from the remote server, returns the HTTP status code, 0 if no
     // response (timeout occurred). This is not recommended except for quick demos, use
     // getResponse periodically instead.
     uint16_t waitResponse(char* data, uint16_t maxLen, uint32_t timeout=DEFAULT_REST_TIMEOUT);
+    uint16_t waitResponse2(char* data, uint16_t maxLen, uint16_t *totalLength, uint16_t *packetLength, uint32_t timeout = DEFAULT_REST_TIMEOUT);
 
     // Set the user-agent for all subsequent requests
     void setUserAgent(const char* value);
