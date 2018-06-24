@@ -389,6 +389,7 @@ uint16_t ELClientRest::waitResponse(char* data, uint16_t maxLen, uint32_t timeou
   uint32_t wait = millis();
   while (_status == 0 && (millis() - wait < timeout)) {
     _elc->Process();
+    yield();
   }
   return getResponse(data, maxLen);
 }
@@ -434,6 +435,7 @@ uint16_t ELClientRest::waitResponse2(char* data, uint16_t maxLen, uint16_t *tota
   uint32_t wait = millis();
   while (_status == 0 && (millis() - wait < timeout)) {
     _elc->Process();
+    yield();
   }
   return getResponse2(data, maxLen, totalLength, packetLength);
 }

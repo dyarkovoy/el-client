@@ -467,6 +467,7 @@ ELClientPacket *ELClient::WaitReturn(uint32_t timeout) {
   while (millis() - wait < timeout) {
     ELClientPacket *packet = Process();
     if (packet != NULL) return packet;
+    yield();
   }
   return NULL;
 }

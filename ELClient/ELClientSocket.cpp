@@ -310,6 +310,7 @@ uint16_t ELClientSocket::waitResponse(uint8_t *resp_type, uint8_t *client_num, c
 		if ( millis() - wait < timeout) 
 		{
 			_elc->Process();
+			yield();
 		} else {
 			return -3;
 		}
